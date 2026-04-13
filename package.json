@@ -1,0 +1,133 @@
+{
+  "name": "code-chronicle",
+  "displayName": "Code Chronicle",
+  "description": "A VS Code extension that keeps recent workspace history visible and generates changelog notes from Git commits.",
+  "version": "0.1.2",
+  "publisher": "dhara",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "SCM"
+  ],
+  "activationEvents": [
+    "onView:codeChronicle.sidebar",
+    "onCommand:codeChronicle.refresh",
+    "onCommand:codeChronicle.generateWorkspaceChangelog",
+    "onCommand:codeChronicle.copyLatestSummary",
+    "onCommand:codeChronicle.enableAutoVersionBump",
+    "onCommand:codeChronicle.disableAutoVersionBump"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeChronicle.refresh",
+        "title": "Code Chronicle: Refresh"
+      },
+      {
+        "command": "codeChronicle.generateWorkspaceChangelog",
+        "title": "Code Chronicle: Generate Workspace Changelog"
+      },
+      {
+        "command": "codeChronicle.copyLatestSummary",
+        "title": "Code Chronicle: Copy Latest Commit Summary"
+      },
+      {
+        "command": "codeChronicle.enableAutoVersionBump",
+        "title": "Code Chronicle: Enable Auto Version Bump"
+      },
+      {
+        "command": "codeChronicle.disableAutoVersionBump",
+        "title": "Code Chronicle: Disable Auto Version Bump"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codeChronicle",
+          "title": "Code Chronicle",
+          "icon": "media/chronicle.svg"
+        }
+      ]
+    },
+    "views": {
+      "codeChronicle": [
+        {
+          "id": "codeChronicle.sidebar",
+          "name": "Workspace History",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "codeChronicle.refresh",
+          "when": "view == codeChronicle.sidebar",
+          "group": "navigation"
+        },
+        {
+          "command": "codeChronicle.generateWorkspaceChangelog",
+          "when": "view == codeChronicle.sidebar",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codeChronicle.enableAutoVersionBump",
+          "when": "view == codeChronicle.sidebar",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Code Chronicle",
+      "properties": {
+        "codeChronicle.maxCommits": {
+          "type": "number",
+          "default": 12,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "How many recent commits the sidebar loads."
+        },
+        "codeChronicle.changelogFile": {
+          "type": "string",
+          "default": "WORKSPACE_CHANGELOG.md",
+          "description": "The markdown file that generated changelog entries are written to."
+        },
+        "codeChronicle.autoVersion.enabled": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Tracks whether Code Chronicle should keep auto version bumping enabled for this workspace."
+        },
+        "codeChronicle.autoVersion.bumpType": {
+          "type": "string",
+          "default": "patch",
+          "scope": "resource",
+          "enum": [
+            "patch",
+            "minor",
+            "major"
+          ],
+          "description": "Which semantic version segment Code Chronicle bumps on each Git commit."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.17",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint": "^9.24.0",
+    "typescript": "^5.8.3"
+  }
+}
