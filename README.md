@@ -168,4 +168,4 @@ Planned improvements that would fit the direction of the project well:
 
 ## License
 
-MIT
+[MIT](./LICENSE)
