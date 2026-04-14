@@ -7,7 +7,7 @@ It focuses on a simple, real workflow:
 - See recent commits in a dedicated sidebar.
 - Copy a concise summary of the latest commit.
 - Generate a markdown workspace changelog from recent commit history.
-- Enable repo-local automatic version bumping on every commit for Node-style projects.
+- Set up repo-local automatic version updates with commit/push-specific behavior.
 
 ## Why this extension
 
@@ -30,7 +30,7 @@ The extension adds a **Code Chronicle** activity bar icon. Its sidebar shows:
 - changed file counts,
 - insertion/deletion stats,
 - touched files for each commit,
-- auto version bump status for the current repo.
+- auto versioning status for the current repo.
 
 ### 2. Generate Workspace Changelog
 
@@ -44,18 +44,27 @@ Command: `Code Chronicle: Copy Latest Commit Summary`
 
 This copies a compact summary of the newest commit to the clipboard, which is useful for status updates, PR notes, or daily standups.
 
-### 4. Repo-Aware Automatic Version Bump
+### 4. Repo-Aware Automatic Versioning
 
 Commands:
 
-- `Code Chronicle: Enable Auto Version Bump`
+- `Code Chronicle: Set Up Auto Versioning`
 - `Code Chronicle: Disable Auto Version Bump`
+- `Code Chronicle: Undo Latest Version Update`
 
-When enabled for the currently opened repository, Code Chronicle installs a repo-local git `pre-commit` hook. Every commit in that repo will:
+During setup, the extension asks which updates are applicable in the current repo. Users can choose any combination of:
 
-- bump `package.json`,
-- update `package-lock.json` if present,
-- stage those files automatically before the commit completes.
+- version name on every commit,
+- version code on every push,
+- or only one of the two.
+
+Supported targets currently include:
+
+- `package.json` version,
+- `app.json` or `app.config.json` version and Android version code fields,
+- Gradle `versionName` and `versionCode` fields when present.
+
+When a version update happens, Code Chronicle writes the change through a repo-local Git hook and shows a small VS Code toast with an `Undo` action.
 
 This keeps the version moving inside the repo you are working on, not inside the extension source itself.
 
@@ -143,10 +152,10 @@ Default: `patch`
 1. Open a Node project that already has a `.git` folder and a `package.json`.
 2. Launch the extension with `F5`.
 3. In the Extension Development Host window, run `Code Chronicle: Enable Auto Version Bump`.
-4. Confirm the sidebar says auto version bump is enabled.
-5. Make any change in that repo and commit it from the terminal.
-6. Verify the repo's `package.json` version increased.
-7. If the repo has a `package-lock.json`, verify it was updated too.
+4. Choose which version fields should update on commit and push.
+5. Make a commit and verify the selected version name field updates.
+6. Push and verify the selected version code field updates, if configured.
+7. When the toast appears, use `Undo` to restore the latest automated update if needed.
 
 ## Architecture Notes
 
@@ -171,7 +180,7 @@ This avoids the common "single-file extension prototype" trap and makes the code
 - diff-level summaries for a selected commit,
 - timeline filters by file or author,
 - optional AI summaries for commit groups,
-- support for custom version files beyond `package.json`,
+- support for more custom version file formats,
 - richer integration with the Source Control view.
 
 ## Submission Notes

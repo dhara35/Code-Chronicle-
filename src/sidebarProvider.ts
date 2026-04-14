@@ -12,6 +12,7 @@ type SidebarState =
       autoVersionEnabled: boolean;
       autoVersionDetail: string;
       autoVersionAction: "enableAutoVersion" | "disableAutoVersion";
+      autoVersionActionLabel: string;
     }
   | { status: "error"; message: string };
 
@@ -82,10 +83,9 @@ export class ChronicleSidebarProvider implements vscode.WebviewViewProvider {
         commits,
         workspaceName: workspaceFolder.name,
         autoVersionEnabled: autoVersionStatus.enabled,
-        autoVersionDetail: autoVersionStatus.supported
-          ? `Auto version bump is ${autoVersionStatus.enabled ? "enabled" : "disabled"} (${autoVersionStatus.bumpType}).`
-          : autoVersionStatus.reason ?? "Auto version bump is unavailable for this workspace.",
-        autoVersionAction: autoVersionStatus.enabled ? "disableAutoVersion" : "enableAutoVersion"
+        autoVersionDetail: autoVersionStatus.detail,
+        autoVersionAction: autoVersionStatus.enabled ? "disableAutoVersion" : "enableAutoVersion",
+        autoVersionActionLabel: autoVersionStatus.enabled ? "Disable" : "Set Up"
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown Git error.";
@@ -233,7 +233,7 @@ export class ChronicleSidebarProvider implements vscode.WebviewViewProvider {
           <button data-action="refresh">Refresh</button>
           <button data-action="generate">Generate</button>
           <button data-action="copyLatest">Copy</button>
-          <button data-action="enableAutoVersion">Enable</button>
+          <button data-action="enableAutoVersion">Set Up</button>
         </div>
         <div class="state">${state.message}</div>
       `;
@@ -266,7 +266,7 @@ export class ChronicleSidebarProvider implements vscode.WebviewViewProvider {
         <button data-action="refresh">Refresh</button>
         <button data-action="generate">Generate</button>
         <button data-action="copyLatest">Copy</button>
-        <button data-action="${state.autoVersionAction}">${state.autoVersionEnabled ? "Disable" : "Enable"}</button>
+        <button data-action="${state.autoVersionAction}">${state.autoVersionActionLabel}</button>
       </div>
       ${commitCards || `<div class="state">No commits found yet.</div>`}
     `;

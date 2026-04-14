@@ -13,12 +13,14 @@
     "SCM"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onView:codeChronicle.sidebar",
     "onCommand:codeChronicle.refresh",
     "onCommand:codeChronicle.generateWorkspaceChangelog",
     "onCommand:codeChronicle.copyLatestSummary",
     "onCommand:codeChronicle.enableAutoVersionBump",
-    "onCommand:codeChronicle.disableAutoVersionBump"
+    "onCommand:codeChronicle.disableAutoVersionBump",
+    "onCommand:codeChronicle.undoLatestVersionUpdate"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -37,11 +39,15 @@
       },
       {
         "command": "codeChronicle.enableAutoVersionBump",
-        "title": "Code Chronicle: Enable Auto Version Bump"
+        "title": "Code Chronicle: Set Up Auto Versioning"
       },
       {
         "command": "codeChronicle.disableAutoVersionBump",
         "title": "Code Chronicle: Disable Auto Version Bump"
+      },
+      {
+        "command": "codeChronicle.undoLatestVersionUpdate",
+        "title": "Code Chronicle: Undo Latest Version Update"
       }
     ],
     "viewsContainers": {
@@ -78,6 +84,11 @@
           "command": "codeChronicle.enableAutoVersionBump",
           "when": "view == codeChronicle.sidebar",
           "group": "navigation@2"
+        },
+        {
+          "command": "codeChronicle.undoLatestVersionUpdate",
+          "when": "view == codeChronicle.sidebar",
+          "group": "navigation@3"
         }
       ]
     },
@@ -112,6 +123,31 @@
             "major"
           ],
           "description": "Which semantic version segment Code Chronicle bumps on each Git commit."
+        },
+        "codeChronicle.autoVersion.versionCodeIncrement": {
+          "type": "number",
+          "default": 1,
+          "scope": "resource",
+          "minimum": 1,
+          "description": "How much Code Chronicle increases version code on each Git push."
+        },
+        "codeChronicle.autoVersion.versionNameTarget": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null,
+          "scope": "resource",
+          "description": "Stores the selected version name target for auto versioning."
+        },
+        "codeChronicle.autoVersion.versionCodeTarget": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null,
+          "scope": "resource",
+          "description": "Stores the selected version code target for auto versioning."
         }
       }
     }
