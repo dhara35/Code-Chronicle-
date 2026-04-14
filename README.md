@@ -10,6 +10,12 @@
 
 Code Chronicle is a VS Code extension for developers who want quick Git context without bouncing back to the terminal all day. It gives you a compact history view, a fast way to copy the latest commit summary, changelog generation from recent commits, and configurable version automation for repos that need it.
 
+## Preview
+<img src="https://github.com/user-attachments/assets/f2fdedf3-89b6-4801-8e3b-ffc33c32fa52" width="50%" />
+<img width="551" height="943" alt="image" src="https://github.com/user-attachments/assets/58a0d763-14e4-4344-980f-9bdfd0eff331" />
+<img width="558" height="112" alt="image" src="https://github.com/user-attachments/assets/0f6b5c53-c422-4272-bdb6-401e61aebf1f" />
+
+
 ## Highlights
 
 - Browse recent commits in a dedicated sidebar.
