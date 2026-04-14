@@ -1,95 +1,100 @@
-# Code Chronicle
+<p align="center">
+  <img src="./media/chronicle.svg" alt="Code Chronicle icon" width="72" height="72" />
+</p>
 
-Code Chronicle is a TypeScript VS Code extension that brings recent Git history into the editor so developers do not have to keep context-switching to the terminal just to remember what changed.
+<h1 align="center">Code Chronicle</h1>
 
-It focuses on a simple, real workflow:
+<p align="center">
+  Keep recent Git history, changelog generation, and version updates close to your editor.
+</p>
 
-- See recent commits in a dedicated sidebar.
-- Copy a concise summary of the latest commit.
-- Generate a markdown workspace changelog from recent commit history.
-- Set up repo-local automatic version updates with commit/push-specific behavior.
+Code Chronicle is a VS Code extension for developers who want quick Git context without bouncing back to the terminal all day. It gives you a compact history view, a fast way to copy the latest commit summary, changelog generation from recent commits, and configurable version automation for repos that need it.
 
-## Why this extension
+## Highlights
 
-When working quickly, especially under deadlines, it is easy to lose track of:
-
-- what changed recently,
-- which files were involved,
-- and how to turn commit history into a usable changelog.
-
-This extension makes that information available directly inside VS Code. It is small on purpose, but useful enough to keep open while coding.
+- Browse recent commits in a dedicated sidebar.
+- Generate a markdown changelog from recent Git history.
+- Copy the latest commit summary for standups, PRs, or release notes.
+- Configure version name updates on commit and version code updates on push.
+- Undo the latest automated version update from a lightweight VS Code toast.
 
 ## Features
 
-### 1. Sidebar: Workspace History
+### Workspace history in the sidebar
 
-The extension adds a **Code Chronicle** activity bar icon. Its sidebar shows:
+The Code Chronicle sidebar keeps the latest commits visible inside VS Code, including:
 
-- recent commits,
-- author and date,
-- changed file counts,
-- insertion/deletion stats,
-- touched files for each commit,
-- auto versioning status for the current repo.
+- commit subject
+- author and date
+- file change stats
+- touched files
+- current auto-versioning status
 
-### 2. Generate Workspace Changelog
+### Changelog generation
 
-Command: `Code Chronicle: Generate Workspace Changelog`
+Run `Code Chronicle: Generate Workspace Changelog` to create or refresh `WORKSPACE_CHANGELOG.md` from recent commits in the current workspace.
 
-This command creates or overwrites `WORKSPACE_CHANGELOG.md` with a readable markdown summary based on the latest commits.
+### Latest commit summary
 
-### 3. Copy Latest Commit Summary
+Run `Code Chronicle: Copy Latest Commit Summary` to copy a compact summary of the newest commit to your clipboard.
 
-Command: `Code Chronicle: Copy Latest Commit Summary`
+### Auto versioning with setup choices
 
-This copies a compact summary of the newest commit to the clipboard, which is useful for status updates, PR notes, or daily standups.
+Run `Code Chronicle: Set Up Auto Versioning` and the extension will ask what should be automated for the current repo.
 
-### 4. Repo-Aware Automatic Versioning
+You can choose:
 
-Commands:
+- version name updates on every commit
+- version code updates on every push
+- both
+- or just one of them
 
+Supported targets currently include:
+
+- `package.json` version
+- `app.json` or `app.config.json` version fields
+- Android version code fields in supported JSON configs
+- Gradle `versionName`
+- Gradle `versionCode`
+
+When an automated update happens, Code Chronicle shows a small notification with an `Undo` action.
+
+## Commands
+
+- `Code Chronicle: Refresh`
+- `Code Chronicle: Generate Workspace Changelog`
+- `Code Chronicle: Copy Latest Commit Summary`
 - `Code Chronicle: Set Up Auto Versioning`
 - `Code Chronicle: Disable Auto Version Bump`
 - `Code Chronicle: Undo Latest Version Update`
 
-During setup, the extension asks which updates are applicable in the current repo. Users can choose any combination of:
+## Configuration
 
-- version name on every commit,
-- version code on every push,
-- or only one of the two.
+### `codeChronicle.maxCommits`
 
-Supported targets currently include:
+Number of recent commits shown in the sidebar.
 
-- `package.json` version,
-- `app.json` or `app.config.json` version and Android version code fields,
-- Gradle `versionName` and `versionCode` fields when present.
+Default: `12`
 
-When a version update happens, Code Chronicle writes the change through a repo-local Git hook and shows a small VS Code toast with an `Undo` action.
+### `codeChronicle.changelogFile`
 
-This keeps the version moving inside the repo you are working on, not inside the extension source itself.
+Name of the generated changelog file.
 
-## Tech Stack
+Default: `WORKSPACE_CHANGELOG.md`
 
-- TypeScript
-- VS Code Extension API
-- Node.js child process integration for Git commands
-- Webview sidebar UI
+### `codeChronicle.autoVersion.bumpType`
 
-## Project Structure
+Semver segment used when version name is bumped on commit.
 
-```text
-src/
-  extension.ts          # activation and command wiring
-  git.ts                # git command execution + parsing
-  autoVersion.ts        # repo-local hook installation and status logic
-  changelogService.ts   # markdown generation and commit summaries
-  sidebarProvider.ts    # webview-based sidebar UI
-  types.ts              # shared types
-media/
-  chronicle.svg         # activity bar icon
-```
+Default: `patch`
 
-## How to Run from Source
+### `codeChronicle.autoVersion.versionCodeIncrement`
+
+Amount added to version code on each push.
+
+Default: `1`
+
+## Development
 
 ### Prerequisites
 
@@ -98,101 +103,62 @@ media/
 - Git
 - VS Code
 
-### Setup
+### Run locally
 
 ```bash
 npm install
 npm run compile
 ```
 
-Open the project in VS Code, then press:
+Open the project in VS Code and press `F5` to launch an Extension Development Host.
 
-```text
-F5
+### Useful scripts
+
+```bash
+npm run compile
+npm run watch
+npm run lint
 ```
 
-This launches an Extension Development Host where the extension can be tested.
+## Project structure
 
-## Available Commands
+```text
+src/
+  extension.ts
+  git.ts
+  autoVersion.ts
+  changelogService.ts
+  sidebarProvider.ts
+  types.ts
+media/
+  chronicle.svg
+```
 
-- `Code Chronicle: Refresh`
-- `Code Chronicle: Generate Workspace Changelog`
-- `Code Chronicle: Copy Latest Commit Summary`
-- `Code Chronicle: Enable Auto Version Bump`
-- `Code Chronicle: Disable Auto Version Bump`
+## Notes on version automation
 
-## Configuration
+Code Chronicle installs repo-local Git hooks for the current workspace when auto versioning is enabled.
 
-### `codeChronicle.maxCommits`
+- Commit hooks are used for version name updates.
+- Push hooks are used for version code updates.
+- Push-time version code changes update the working tree for the next commit rather than altering commits that were already pushed.
 
-How many recent commits to load in the sidebar.
+## Design choices
 
-Default: `12`
+The extension currently talks to Git through the Git CLI instead of the built-in VS Code Git API. That keeps the behavior predictable, easy to debug, and portable across the repo-level workflows this extension depends on.
 
-### `codeChronicle.changelogFile`
+Code Chronicle also stays intentionally focused on practical Git context and lightweight repo automation. There is plenty of room for AI-assisted summaries later, but the current feature set works immediately from source with no external services or API keys.
 
-The markdown file generated by the changelog command.
+Version automation starts with common version fields such as `package.json`, supported app config files, and Gradle metadata. That narrower scope helps keep setup simple and the behavior easy to trust before expanding into more custom file formats.
 
-Default: `WORKSPACE_CHANGELOG.md`
+## Roadmap
 
-### `codeChronicle.autoVersion.enabled`
+Planned improvements that would fit the direction of the project well:
 
-Workspace-level flag that tracks whether repo-local auto version bumping is enabled.
-
-Default: `false`
-
-### `codeChronicle.autoVersion.bumpType`
-
-Which semver segment to bump on commit.
-
-Default: `patch`
-
-## How to Test Auto Versioning
-
-1. Open a Node project that already has a `.git` folder and a `package.json`.
-2. Launch the extension with `F5`.
-3. In the Extension Development Host window, run `Code Chronicle: Enable Auto Version Bump`.
-4. Choose which version fields should update on commit and push.
-5. Make a commit and verify the selected version name field updates.
-6. Push and verify the selected version code field updates, if configured.
-7. When the toast appears, use `Undo` to restore the latest automated update if needed.
-
-## Architecture Notes
-
-I kept the architecture intentionally modular:
-
-- `extension.ts` only handles activation and command registration.
-- `git.ts` is isolated so Git integration can evolve independently.
-- `autoVersion.ts` owns repo-local hook installation, removal, and status checks.
-- `changelogService.ts` owns output formatting logic.
-- `sidebarProvider.ts` owns the editor UI.
-
-This avoids the common "single-file extension prototype" trap and makes the code easier to extend.
-
-## Tradeoffs
-
-- I used Git CLI calls instead of the built-in Git extension API because it is straightforward, reliable, and easy to reason about under time pressure.
-- The extension currently focuses on commit history and repo-local automation, not AI summarization, because I wanted a useful feature that works immediately from source with no API keys.
-- Auto versioning targets `package.json` repos first so the feature is reliable and easy to review.
-
-## What I Would Build Next
-
-- diff-level summaries for a selected commit,
-- timeline filters by file or author,
-- optional AI summaries for commit groups,
-- support for more custom version file formats,
-- richer integration with the Source Control view.
-
-## Submission Notes
-
-This repository is designed to be easy to review:
-
-- real VS Code extension,
-- TypeScript only,
-- runs from source,
-- useful workflow improvement,
-- automated versioning on commit for the opened repo,
-- clear README and code structure.
+- diff-level summaries for individual commits
+- timeline filters by file or author
+- optional AI summaries for groups of commits
+- support for more custom version file formats
+- deeper integration with the Source Control view
 
 ## License
 
